@@ -1,8 +1,9 @@
 #!/bin/bash
 
-if(( $# < 2 )) then
+if (( $#<2 ))
+then
     echo error: missing \<file_name\> parameter of form \{p\|f\}\<month_day_year\>_cryst_\<vers\>
-    ls -a ./archive
+    ls ./archive
 else
     tar -czvf ./archive/$1.tgz current
     rm -rf ./current/*

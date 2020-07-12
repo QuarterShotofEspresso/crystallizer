@@ -1,12 +1,12 @@
 /*	Author: Ratnodeep Bandyopadhyay
  */
 #include <avr/io.h>
-//#ifdef _SIMULATE_
-//#include "simAVRHeader.h"
-//#endif
+
 
 // custom macros
 #define true 1
+
+
 
 // global variables
 unsigned short gADCsample;
@@ -15,13 +15,13 @@ unsigned char gTensDisplay;
 unsigned char gOnesDisplay;
 
 unsigned char gConversionComplete = 0;
-enum e_states{START, PROCESS, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS} gState = START;
+enum e_states{START, PROCESS, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS, ERROR} gState = START;
 
 // additional functions
 unsigned char toHexData( unsigned char sum );
 void stateMachine( void );
 void computeData( void );
-
+void tick( void );
 
 int main( void ) {
     /* Insert DDR and PORT initializations */
@@ -138,7 +138,7 @@ void tick( void ) {
 
 unsigned char toHexData( unsigned char sum ) {
 
-    switch ( sum ) {
+    switch( sum ) {
 
         case 0: sum = ~0x3F; break;
     	case 1: sum = ~0x06; break;
