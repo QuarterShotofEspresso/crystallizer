@@ -1,7 +1,7 @@
 /*	Author: Ratnodeep Bandyopadhyay
  */
 #include <avr/io.h>
-
+#include <util/delay.h>
 
 // custom macros
 #define true 1
@@ -15,7 +15,7 @@ unsigned char gTensDisplay;
 unsigned char gOnesDisplay;
 
 unsigned char gConversionComplete = 0;
-enum e_states{START, PROCESS, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS, ERROR} gState = START;
+enum e_states{START, PROCESS, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS, ERROR} gState = ERROR;
 
 // additional functions
 unsigned char toHexData( unsigned char sum );
@@ -27,7 +27,28 @@ int main( void ) {
     /* Insert DDR and PORT initializations */
     DDRC = 0xFF; PORTC = 0x00;// set to output
     DDRD = 0xFF; PORTD = 0x00;
+
+
+    //disabling jtag   
+/*    unsigned char jtagCounter = 0;
+
+    while( jtagCounter < 10 ) {
+        PORTC = ~PORTC;
+        _delay_ms(1000);
+        ++jtagCounter;
+    }
     
+    MCUCR |= (1 << JTD);
+    MCUCR |= (1 << JTD);
+    //jtag disabled
+
+    jtagCounter = 0;
+    while( jtagCounter < 10 ) {
+        PORTC = ~PORTC;
+        _delay_ms(1000);
+        ++jtagCounter;
+    }
+*/
     // initialize the ADC
     ADMUX =  (1 << MUX2) | (1 << MUX1) | (1 << MUX0); // select PINA7's ADC
     // Enable ADC, Enable Auto Trigger in Free Running Mode, Enable Interrupt, Set prescaler factor to 128
@@ -125,9 +146,8 @@ void tick( void ) {
             break;
 
         default:
-            PORTA = 0x00;
-            PORTC = ~0x40;
             PORTA = 0x01;
+            PORTC = toHexData( 10 );
             break;
 
     }
@@ -150,7 +170,7 @@ unsigned char toHexData( unsigned char sum ) {
     	case 7: sum = ~0x07; break;
     	case 8: sum = ~0x7F; break;
     	case 9: sum = ~0x67; break;
-    	default: sum = ~0x40; break;
+    	default: sum = 0x40; break;
 
     }
 
