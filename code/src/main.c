@@ -1,10 +1,15 @@
 /*	Author: Ratnodeep Bandyopadhyay
  */
 #include <avr/io.h>
-//#include <util/delay.h>
+#include <util/delay.h>
 
 // custom macros
 #define true 1
+
+// debugging defines
+#define _ENABLE_AD_
+#define _ENABLE_TICK_
+#define _ENABLE_DELAY_ 1
 
 // global variables
 unsigned short gADCsample;
@@ -22,43 +27,32 @@ void computeData( void );
 void tick( void );
 
 int main( void ) {
-    /* Insert DDR and PORT initializations */
+
     DDRA = 0x00; PORTA = 0x00;
     DDRB = 0x00; PORTB = 0x00;
-    DDRC = 0xFF; PORTC = 0x00; // set to output
-    DDRD = 0xFF; PORTD = 0x00;
+    DDRC = 0xFF; PORTC = 0x00;
+    DDRD = 0x07; PORTD = 0x01;
 
 
-    //disabling jtag
-/*    unsigned char jtagCounter = 0;
+    // calibrate internal RC clock
+    OSCCAL = ( OSSCAL & 0x80 ) | 0x08;
 
-    while( jtagCounter < 10 ) {
-        PORTC = ~PORTC;
-        _delay_ms(1000);
-        ++jtagCounter;
-    }
-    
-    MCUCR |= (1 << JTD);
-    MCUCR |= (1 << JTD);
-    //jtag disabled
+    #ifdef _ENABLE_AD_
+      // initialize the ADC
+      ADMUX =  (1 << MUX2) | (1 << MUX1) | (1 << MUX0); // select PINA7's ADC
+      // Enable ADC, Enable Auto Trigger in Free Running Mode, Enable Interrupt, Set prescaler factor to 128
+      ADCSRA = (1 << ADEN) | (1 << ADATE) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); 
+      DIDR0 =  (1 << ADC7D); // disable digital input on PINA7
+      ADCSRA = (1 << ADSC); // begin sampling
+    #endif
 
-    jtagCounter = 0;
-    while( jtagCounter < 10 ) {
-        PORTC = ~PORTC;
-        _delay_ms(1000);
-        ++jtagCounter;
-    }
-*/
-    // initialize the ADC
-    //ADMUX =  (1 << MUX2) | (1 << MUX1) | (1 << MUX0); // select PINA7's ADC
-    // Enable ADC, Enable Auto Trigger in Free Running Mode, Enable Interrupt, Set prescaler factor to 128
-    //ADCSRA = (1 << ADEN) | (1 << ADATE) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); 
-    //DIDR0 =  (1 << ADC7D); // disable digital input on PINA7
-    //ADCSRA = (1 << ADSC); // begin sampling
-
-    // forever
     while( true ) {
-        tick();
+        #ifdef _ENABLE_TICK_
+          tick();
+        #endif
+        #ifdef _ENABLE_DELAY_
+          _delay_ms( _ENABLE_DELAY_ );
+        #endif
     }
 
     return 1;
@@ -67,7 +61,8 @@ int main( void ) {
 
 void computeData( void ) {
 
-    unsigned short milliamps = (( gADCsample >> 1 ) * 125 ) >> 7; // NOTE:: I realized something neat. So I had to delve a bit deeper: https://www.desmos.com/calculator/nephumyfrw
+    // NOTE:: I realized something neat. So I had to delve a bit deeper: https://www.desmos.com/calculator/nephumyfrw
+    unsigned short milliamps = (( gADCsample >> 1 ) * 125 ) >> 7;
     unsigned char hundreds = milliamps / 100;
     unsigned char tens =  (( milliamps % 100 ) / 10 );
     unsigned char ones =  (( milliamps % 100 ) % 10 ) / 1;
@@ -125,29 +120,29 @@ void tick( void ) {
             break;
 
         case DISPLAY_HUNDREDS:
-            PORTA = 0x00;
-            PORTD = gHundredsDisplay;
-            PORTA = 0x01;
+            PORTD = 0x00;
+            PORTC = gHundredsDisplay;
+            PORTD = 0x01;
             break;
 
         case DISPLAY_TENS:
-            PORTA = 0x00;
-            PORTD = gTensDisplay;
-            PORTA = 0x02;
+            PORTD = 0x00;
+            PORTC = gTensDisplay;
+            PORTD = 0x02;
             break;
 
         case DISPLAY_ONES:
-            PORTA = 0x00;
-            PORTD = gOnesDisplay;
-            PORTA = 0x04;
+            PORTD = 0x00;
+            PORTC = gOnesDisplay;
+            PORTD = 0x04;
             break;
 
         case START:
             break;
 
         default:
-            PORTA = 0x01;
-            PORTD = toHexData( 10 );
+            PORTD = 0x01;
+            PORTC = toHexData( 10 );
             break;
 
     }
@@ -170,7 +165,7 @@ unsigned char toHexData( unsigned char sum ) {
     	case 7: sum = ~0x07; break;
     	case 8: sum = ~0x7F; break;
     	case 9: sum = ~0x67; break;
-    	default: sum = ~0x40; break;
+    	default: sum = ~0x80; break;
 
     }
 
