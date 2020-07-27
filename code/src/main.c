@@ -50,7 +50,8 @@ int main( void ) {
 
 
     // calibrate internal RC clock
-    OSCCAL = ( OSCCAL & 0x80 ) | ( 0x7F & TUNE_FACTOR );
+    //OSCCAL = ( OSCCAL & 0x80 ) | ( 0x7F & TUNE_FACTOR );
+    OSCCAL = 0xFF;
 
     #ifdef _ENABLE_AD_
       // initialize the ADC
