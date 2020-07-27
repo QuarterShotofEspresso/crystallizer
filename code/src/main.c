@@ -5,7 +5,7 @@
 
 // custom macros
 #define true 1
-#define TUNE_FACTOR 0x7F
+#define TUNE_FACTOR 0xFF
 #define TOTAL_TASKS 2
 #define TICK_GCF 1
 #define TICK_SAMPLE_INTERVAL 10
@@ -30,10 +30,11 @@ enum e_states{START, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS, ERROR} gState
 // additional functions
 unsigned char toHexData( unsigned char sum );
 void execute      ( void );
-void computeData  ( void );
+//void computeData  ( void );
 void tick_sample  ( void );
 void tick_display ( void );
 void initTasks    ( void );
+
 
 struct task {
     void (*tick) (void);
@@ -41,26 +42,29 @@ struct task {
     unsigned char ticksPassed;
 } gTasks[TOTAL_TASKS];
 
+
 int main( void ) {
 
     DDRA = 0x00; PORTA = 0x00;
     DDRB = 0x00; PORTB = 0x00;
     DDRC = 0xFF; PORTC = 0x00;
-    DDRD = 0x07; PORTD = 0x01;
-
+    DDRD = 0x07; PORTD = 0x00;
 
     // calibrate internal RC clock
-    //OSCCAL = ( OSCCAL & 0x80 ) | ( 0x7F & TUNE_FACTOR );
-    OSCCAL = 0xFF;
+    OSCCAL = TUNE_FACTOR;
+
+    // setting the clock prescaler
+    //CLKPR = 0x80;
+    //CLKPR = 0x80;
+
 
     #ifdef _ENABLE_AD_
       // initialize the ADC
-      PRR0 =    (0 << PRADC); // set PRR0 to 1
+      PRR0 =    (0 << PRADC); // set PRR0 to 0
       ADMUX =   (1 << MUX2) | (1 << MUX1) | (1 << MUX0); // select PINA7's ADC
+      DIDR0 =   (1 << ADC7D); // disable digital input on PINA7
       // Enable ADC, Enable Auto Trigger in Free Running Mode, Enable Interrupt, Set prescaler factor to 128
-      ADCSRA |= (1 << ADSC) | (1 << ADEN) | (1 << ADATE);
-      //DIDR0 =   (1 << ADC7D); // disable digital input on PINA7
-      //ADCSRA |= (1 << ADSC); // begin sampling
+      ADCSRA |= (1 << ADSC) | (1 << ADEN); //| (1 << ADATE);
     #endif
 
     initTasks();
@@ -97,7 +101,7 @@ void execute( void ) {
             gTasks[i].tick();
             gTasks[i].ticksPassed = 0;
         } else {
-            gTasks[i].ticksPassed++;
+            gTasks[i].ticksPassed += TICK_GCF;
         }
     }
 
@@ -105,9 +109,10 @@ void execute( void ) {
 }
 
 
-void computeData( void ) {
+void tick_sample( void ) {
 
     // NOTE:: I realized something neat. So I had to delve a bit deeper: https://www.desmos.com/calculator/nephumyfrw
+    
     gADCsample = ADC;
     unsigned short milliamps = (( gADCsample >> 1 ) * 125 ) >> 7;
     unsigned char hundreds = milliamps / 100;
@@ -118,14 +123,9 @@ void computeData( void ) {
     gTensDisplay = toHexData( tens );
     gOnesDisplay = toHexData( ones );
 
+    ADCSRA |= 1 << ADSC;
+
     return;
-}
-
-
-void tick_sample( void ) {
-    // there's only one state in sample
-    computeData();
-
 }
 
 
