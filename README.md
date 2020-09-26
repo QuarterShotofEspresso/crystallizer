@@ -9,7 +9,7 @@ The crystallizer is a lid for mason jars. An advanced, applications-specific lid
 The crystallizer itself is a tool that can deposit a current into any solution, but I've been using it to grow copper metal specifically.
 Here's a rendering of what the device looks like.
 
-![3D Rendering of Crystallizer](https://github.com/QuarterShotofEspresso/crystallizer/pcb/current/images/3d_render.png)
+![3D Rendering of Crystallizer](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/3d_render.png)
 
 
 TODO: Insert image with indications once PCB arrives
@@ -21,7 +21,7 @@ re-screwed to seal the crystallizer in place.
 
 > NOTE: The format below is <Color> : <Purpose>. Correlate the <Color> with the colored circles of the image above.  
 
-[Blue]: The board is powered by a ([5V power supply]()).  
+[Blue]: The board is powered by a 5V power supply. TODO: Put a link to the supply after you know it works.  
 [Red]: Notice the seven segment display at the top of the board. This display is responsible for displaying the current, in milliamps, flowing through the solution.
 The maximum current capacity of the circuit is 500mA.  
 [Green]: The current can be adjusted using the potentiometer located near the bottom left of the image.  
@@ -29,7 +29,7 @@ The maximum current capacity of the circuit is 500mA.
 [Purple]: Then there are two separate holes on opposite sides of the crystallizer. This is where the anode and cathode can attach to the crystallizer by alligator clips.  
 [White]: These clips will connect to the board using the block connector as shown below:  
 
-Image will be inserted once I have the PCB  
+TODO: Image will be inserted once I have the PCB  
 
 
 [Yellow]: The 6 row female headers are used to upload the code to the board.
