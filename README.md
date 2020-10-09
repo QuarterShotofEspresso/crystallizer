@@ -34,7 +34,8 @@ The maximum current capacity of the circuit is 500mA.
 ## Uploading code to the board
 To upload code to the board, an atmel_isp progammer was used. The makefile is setup with the atmel_isp board.
 If the board used to flash the mcu is different, change the `PROGRAMMER` varaible in the Makefile to match the appropriate programmer.
-Run `make && make flash` to compile, then flash the program.  
+Naviagate to the code directory. In the directory, run `./configure`. This only needs to be run the first time.
+Run `make && make flash` to compile and flash the program.  
 
 ## Mason Jar Specifications
 The Mason Jar must have a 80mm diameter mouth to be compatible with the Crystallizer. The capacity of the jar is up to the experiment, but I've been using an 8oz jar.
