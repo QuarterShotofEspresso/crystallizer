@@ -12,30 +12,29 @@ Here's a rendering of what the device looks like.
 ![3D Rendering of Crystallizer](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/3d_render.png)
 
 
-![Diagram](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/diagram.png)
 
 ## How to use it
 Since the crystallizer is, itself, a lid, the original lid of the mason jar can be disposed. With the mason jar open, the crystallizer can be placed on top of the jar, and the ring
 re-screwed to seal the crystallizer in place.  
 
+![Diagram](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/diagram.png)
+
 > NOTE: The format below is <Color> : <Purpose>. Correlate the <Color> with the colored circles of the image above.  
 
-[Blue]: The board is powered by a 5V power supply. TODO: Put a link to the supply after you know it works.  
-[Red]: Notice the seven segment display at the top of the board. This display is responsible for displaying the current, in milliamps, flowing through the solution.
+[Red]: The board is powered by a 5V power supply. TODO: Put a link to the supply after you know it works.  
+[Orange]: Notice the seven segment display at the top of the board. This display is responsible for displaying the current, in milliamps, flowing through the solution.
 The maximum current capacity of the circuit is 500mA.  
-[Green]: The current can be adjusted using the potentiometer located near the bottom left of the image.  
-[Orange]: The largest hole in the PCB is to refill the solvent as it will evaporate over time.  
-[Purple]: Then there are two separate holes on opposite sides of the crystallizer. This is where the anode and cathode can attach to the crystallizer by alligator clips.  
+[Purple]: The current can be adjusted using the potentiometer located near the bottom left of the image.  
+[Light Blue]: The largest hole in the PCB is to refill the solvent as it will evaporate over time.  
+[Green]: Then there are two separate holes on opposite sides of the crystallizer. This is where the anode and cathode can attach to the crystallizer by alligator clips.  
 [White]: These clips will connect to the board using the block connector as shown below:  
-
-TODO: Image will be inserted once I have the PCB  
-
-
 [Yellow]: The 6 row female headers are used to upload the code to the board.
 
 
 ## Uploading code to the board
-
+To upload code to the board, an atmel_isp progammer was used. The makefile is setup with the atmel_isp board.
+If the board used to flash the mcu is different, change the `PROGRAMMER` varaible in the Makefile to match the appropriate programmer.
+Run `make && make flash` to compile, then flash the program.  
 
 ## Mason Jar Specifications
 The Mason Jar must have a 80mm diameter mouth to be compatible with the Crystallizer. The capacity of the jar is up to the experiment, but I've been using an 8oz jar.
