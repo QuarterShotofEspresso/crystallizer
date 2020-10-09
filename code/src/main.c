@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-// custom defines
+// convenience defines
 #define true         1
 #define false        0
 #define RC_CLOCK_CAL 0x7F
@@ -33,18 +33,28 @@ unsigned short gTimeElapsed = 0;
 unsigned char gConversionComplete = 0;
 enum e_states{START, DISPLAY_ONES, DISPLAY_TENS, DISPLAY_HUNDREDS, ERROR} gState = START;
 
-// additional functions
+// helper functions
 unsigned char toHexData( unsigned char sum );
-void execute      ( void );
-void tick_sample  ( void );
-void tick_display ( void );
-void initTasks    ( void );
 
+// task functions
+void executeTasks      ( void );
+void initializeTasks   ( void );
+
+// tick functions
+void tick_sample       ( void );
+void tick_display      ( void );
+
+// custom structure
 struct task {
     void (*tick) (void);
-    unsigned char tickInterval;
-    unsigned char ticksPassed;
+    unsigned short tickInterval;
+    unsigned short ticksPassed;
 } gTasks[TOTAL_TASKS];
+
+
+  //****************//
+ //  Program       //
+//****************//
 
 
 int main( void ) {
@@ -73,7 +83,7 @@ int main( void ) {
     // ensure countera0 is not doing anything
     TCCR0A = 0x00;
     // and timer0b with 1024 prescaler
-    TCCR0B = (1 << CS00); //| (1 << CS00);
+    TCCR0B = (1 << CS00);
     // enable timrsk0 timer overflow interrupt
     TIMSK0 = (1 << TOIE0);
   #endif
@@ -81,7 +91,7 @@ int main( void ) {
     // set the global interrupt enable
     SREG |= (1 << 7);
 
-    initTasks();
+    initializeTasks();
 
     while( true ) {
       #ifdef _ENABLE_TICK_
@@ -103,7 +113,7 @@ int main( void ) {
  * initialize Tasks stored in gTasks
  *
  */
-void initTasks( void ) {
+void initializeTasks( void ) {
     gTasks[0].tick = tick_sample;
     gTasks[0].tickInterval = TICK_SAMPLE_INTERVAL;
     gTasks[0].ticksPassed = 0;
@@ -162,7 +172,8 @@ void tick_sample( void ) {
 }
 
 
-/*  tick_display:
+/*
+ *  tick_display:
  * FSM controlling the seven-segment display
  *
  */
@@ -229,7 +240,8 @@ void tick_display( void ) {
 }
 
 
-/*  toHexData
+/*
+ *  toHexData
  * Convert a numerical value *sum* to
  * to the 8-bit representation of  the *sum* on a seven-seg
  *
@@ -254,8 +266,11 @@ unsigned char toHexData( unsigned char sum ) {
 }
 
 
-// Interrupt Subroutine
-//Wait till the timer interrupt is reached to delay for a particular duration
+/*
+ *  Interrupt Subroutine
+ * Millis delay using timer overflow interrupt
+ * 
+ */
 ISR( TIMER0_OVF_vect ) {
     gTimeElapsed++;
 }
