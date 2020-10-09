@@ -12,8 +12,7 @@ Here's a rendering of what the device looks like.
 ![3D Rendering of Crystallizer](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/3d_render.png)
 
 
-TODO: Insert image with indications once PCB arrives
-
+![Diagram](https://github.com/QuarterShotofEspresso/crystallizer/blob/master/pcb/current/images/diagram.png)
 
 ## How to use it
 Since the crystallizer is, itself, a lid, the original lid of the mason jar can be disposed. With the mason jar open, the crystallizer can be placed on top of the jar, and the ring
