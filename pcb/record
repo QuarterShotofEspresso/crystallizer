@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if (( $#<2 ))
+if (( $#<1 ))
 then
     echo error: missing \<file_name\> parameter of form \{p\(PASS\)\|f\(FAIL\)\}\<month_day_year\>_cryst_\<vers\>
     ls ./archive
 else
     tar -czvf ./archive/$1.tgz current
     rm -rf ./current/*
+    mkdir ./current/images
 fi
